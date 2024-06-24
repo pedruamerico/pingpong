@@ -15,10 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let ballY = 145;
     let ballSpeedX = -1;
     let ballSpeedY = 1;
-    let ballSpeedIncrement = 0.2; // Incremento de velocidade da bola
+    let ballSpeedIncrement = 0.2;
+    let initialBallSpeedX = -1;
+    let initialBallSpeedY = 1;
     let scorePlayer1 = 0;
     let scorePlayer2 = 0;
     let jogoPausado = true;
+    const playerSpeed = 5;
+    let gameInterval;
 
     const keysPressedPlayer1 = {
         w: false,
@@ -40,15 +44,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function moveJogadores() {
         if (keysPressedPlayer1.w && player1Y > 0) {
-            player1Y -= 10;
+            player1Y -= playerSpeed;
         } else if (keysPressedPlayer1.s && player1Y < 250) {
-            player1Y += 10;
+            player1Y += playerSpeed;
         }
 
         if (keysPressedPlayer2.ArrowUp && player2Y > 0) {
-            player2Y -= 10;
+            player2Y -= playerSpeed;
         } else if (keysPressedPlayer2.ArrowDown && player2Y < 250) {
-            player2Y += 10;
+            player2Y += playerSpeed;
         }
 
         atualizaTela();
@@ -106,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function mostraFimDeJogo(vencedor) {
         jogoPausado = true;
+        clearInterval(gameInterval);
         gameoverDisplay.style.display = 'block';
         document.getElementById('winner').textContent = vencedor;
     }
@@ -115,21 +120,33 @@ document.addEventListener('DOMContentLoaded', function() {
         player2Y = 120;
         ballX = 195;
         ballY = 145;
-        ballSpeedX = -1; // Resetar a velocidade da bola
-        ballSpeedY = 1; // Resetar a velocidade da bola
+        ballSpeedX = initialBallSpeedX; // Resetar a velocidade da bola
+        ballSpeedY = initialBallSpeedY; // Resetar a velocidade da bola
         jogoPausado = true;
         atualizaTela();
         gameoverDisplay.style.display = 'none';
         startContainer.style.display = 'block';
     }
 
-    startBtn.addEventListener('click', function() {
+    function iniciarJogo() {
         jogoPausado = false;
+        gameoverDisplay.style.display = 'none';
         startContainer.style.display = 'none';
-        setInterval(function() {
+        gameInterval = setInterval(function() {
             moveJogadores();
             moveBola();
         }, 10);
+    }
+
+    restartBtn.addEventListener('click', function() {
+        scorePlayer1 = 0;
+        scorePlayer2 = 0;
+        reiniciarJogo();
+        iniciarJogo();
+    });
+
+    startBtn.addEventListener('click', function() {
+        iniciarJogo();
     });
 
     document.addEventListener('keydown', function(event) {
